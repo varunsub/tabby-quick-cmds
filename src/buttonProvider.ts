@@ -85,7 +85,15 @@ export class ButtonProvider extends ToolbarButtonProvider {
             shortcut += processedKey
             
             // Check if this shortcut matches any command
-            this.executeCommandByShortcut(shortcut)
+            const commands = this.config.store.qc.cmds
+            const matchedCommand = commands.find(cmd => cmd.shortcut === shortcut)
+            
+            // If a command is matched, prevent the default behavior to avoid sending extra escape sequences
+            if (matchedCommand) {
+                event.preventDefault()
+                event.stopPropagation()
+                this.executeCommandByShortcut(shortcut)
+            }
         }
     }
 
