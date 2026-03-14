@@ -1,4 +1,4 @@
-# quick-command-manager
+# tabby-quick-command-manager
 
 A fork of [tabby-quick-cmds](https://github.com/minyoad/terminus-quick-cmds) with additional features. A plugin that provides quick command functionality for [Tabby](https://tabby.sh) terminal.
 
@@ -12,7 +12,7 @@ A fork of [tabby-quick-cmds](https://github.com/minyoad/terminus-quick-cmds) wit
 
 ### From Tabby Plugin Manager
 
-Search for `quick-command-manager` in Tabby's Plugin Manager (Settings > Plugins).
+Search for `tabby-quick-command-manager` in Tabby's Plugin Manager (Settings > Plugins).
 
 ### From ZIP
 
