@@ -1,87 +1,45 @@
-# tabby-quick-cmds
+# quick-command-manager
 
-A plugin that provides quick command functionality for Tabby terminal.
+A fork of [tabby-quick-cmds](https://github.com/minyoad/terminus-quick-cmds) with additional features. A plugin that provides quick command functionality for [Tabby](https://tabby.sh) terminal.
 
-## Features
+## What's new in this fork
 
-- Quick Command Menu: Quickly open command list through hotkeys
-- Command Group Management: Support organizing commands by groups
-- Multi-line Command Support: Execute complex commands containing multiple lines
-- Hotkey Combination Support: Send special combination key commands (like Ctrl+C, Ctrl+I, etc.)
-- Delayed Execution: Support adding delays between commands
-- Enter Control: Option to automatically add carriage return at the end of commands
-
-## Hotkeys
-
-- Windows: `Alt+Q`
-- macOS: `Alt+Q`
-- Linux: `Alt+Q`
+- **Configurable palette shortcut**: Set a custom keyboard shortcut to open the command palette directly from the plugin settings (Settings > Quick Commands).
+- **Per-command shortcuts**: Assign individual keyboard shortcuts to any command for instant execution without opening the palette.
+- **Usage-based sorting**: Commands within groups are sorted by how frequently you use them.
 
 ## Installation
 
-### Install from ZIP Package
+### From Tabby Plugin Manager
 
-1. Download the latest release ZIP package from [GitHub Releases](https://github.com/varunsub/tabby-quick-cmds/releases)
-2. Extract the ZIP package
-3. Copy the extracted folder to Tabby's plugins directory:
+Search for `quick-command-manager` in Tabby's Plugin Manager (Settings > Plugins).
+
+### From ZIP
+
+1. Download the latest ZIP from [GitHub Releases](https://github.com/varunsub/tabby-quick-cmds/releases)
+2. Extract and copy to Tabby's plugins directory:
    - Windows: `%APPDATA%\tabby\plugins\node_modules`
    - macOS: `~/Library/Application Support/tabby/plugins`
    - Linux: `~/.config/tabby/plugins`
-4. Restart Tabby
-5. Verify the installation by checking if the Quick Commands menu appears in Tabby's settings
+3. Restart Tabby
 
-## Configuration
+## Usage
 
-### Command Configuration
+### Open palette shortcut
 
-Each command contains the following properties:
-- name: Command name
-- text: Command content
-- appendCR: Whether to automatically add carriage return (true/false)
-- group: Command group (optional)
+Go to Settings > Quick Commands and click **Capture** next to "Open palette shortcut". Press your desired key combination (e.g. `Ctrl+Space`). That shortcut will now open the command palette from anywhere.
 
-### Special Syntax
+The built-in `Alt+Q` hotkey (via Tabby's keyboard settings) also works by default.
 
-1. Multi-line Commands: Use line breaks directly in command content
-```
-cd /path/to/project
-npm install
-npm start
-```
+### Per-command shortcuts
 
-2. Combination Keys: Use ASCII control characters
-- Ctrl+C: \x03
-- Ctrl+I: \x09
+When editing a command, click **Capture** next to the shortcut field and press a key combination. That command will execute immediately when the shortcut is pressed, without opening the palette.
 
-3. Delayed Execution: Use \sxxx to add delay
-- \s1000: Delay 1000 milliseconds
+- Press `Escape` while capturing to cancel
+- Press `Delete` or `Backspace` to clear a shortcut
 
-## Usage Examples
+For full documentation on command syntax (multi-line commands, control characters, delays), see the [original project](https://github.com/minyoad/terminus-quick-cmds).
 
-1. Basic Command
-```
-name: "List Files"
-text: "ls -la"
-appendCR: true
-```
+## License
 
-2. Multi-line Command Example
-```
-name: "Start Project"
-text: "cd ~/project\nnpm install\nnpm start"
-appendCR: true
-```
-
-3. Command with Delay
-```
-name: "Step Execution"
-text: "echo Step 1\s1000\necho Step 2\s1000\necho Step 3"
-appendCR: true
-```
-
-4. Combination Key Command
-```
-name: "Interrupt Process"
-text: "\x03"
-appendCR: false
-```
+MIT
