@@ -1,4 +1,4 @@
-name: Publish to npm
+name: Publish and Release
 
 on:
   push:
@@ -6,9 +6,9 @@ on:
       - 'v*'
 
 permissions:
-  id-token: write  # Required for OIDC
-  contents: read
-  
+  id-token: write
+  contents: write
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -22,7 +22,6 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org/'
 
-      # Ensure npm 11.5.1 or later is installed
       - name: Update npm
         run: npm install -g npm@latest
 
@@ -32,5 +31,14 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Create release zip
+        run: zip -r quick-command-manager-${{ github.ref_name }}.zip dist package.json README.md README_CN.md LICENSE
+
       - name: Publish to npm
         run: npm publish
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: quick-command-manager-${{ github.ref_name }}.zip
+          generate_release_notes: true
