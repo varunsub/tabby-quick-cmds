@@ -32,7 +32,7 @@ jobs:
         run: npm run build
 
       - name: Create release zip
-        run: zip -r quick-command-manager-${{ github.ref_name }}.zip dist package.json README.md README_CN.md LICENSE
+        run: zip -r tabby-quick-command-manager-${{ github.ref_name }}.zip dist package.json README.md README_CN.md LICENSE
 
       - name: Publish to npm
         run: npm publish
@@ -40,5 +40,5 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: quick-command-manager-${{ github.ref_name }}.zip
+          files: tabby-quick-command-manager-${{ github.ref_name }}.zip
           generate_release_notes: true
