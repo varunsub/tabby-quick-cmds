@@ -1,6 +1,28 @@
 h3 Quick Commands
 
 .form-group
+    label Open palette shortcut
+    .input-group
+        input.form-control(
+            type='text',
+            placeholder='Click to capture shortcut',
+            [(ngModel)]='config.store.qc.openShortcut',
+            (click)='startCaptureOpenShortcut($event)',
+            (focus)='startCaptureOpenShortcut($event)',
+            [disabled]='isCapturingOpenShortcut',
+        )
+        .input-group-append
+            button.btn.btn-outline-secondary(
+                type='button',
+                (click)='startCaptureOpenShortcut($event)',
+                [class.btn-outline-primary]='isCapturingOpenShortcut',
+            )
+                if isCapturingOpenShortcut
+                    | Capturing...
+                else
+                    | Capture
+
+.form-group
     button.btn.btn-outline-primary((click)='createCommand()')
         div.fa.fa-fw.fa-globe
         span.ml-2 Add command

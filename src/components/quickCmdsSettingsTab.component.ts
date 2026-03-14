@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { Component, HostListener } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { ConfigService } from 'terminus-core'
 import { QuickCmds, ICmdGroup } from '../api'
@@ -13,6 +13,55 @@ export class QuickCmdsSettingsTabComponent {
     commands: QuickCmds[]
     childGroups: ICmdGroup[]
     groupCollapsed: {[id: string]: boolean} = {}
+    isCapturingOpenShortcut: boolean = false
+
+    @HostListener('document:keydown', ['$event'])
+    onKeyDown(event: KeyboardEvent) {
+        if (!this.isCapturingOpenShortcut) {
+            return
+        }
+
+        event.preventDefault()
+        event.stopPropagation()
+
+        if (event.key === 'Escape') {
+            this.isCapturingOpenShortcut = false
+            return
+        }
+
+        if (event.key === 'Delete' || event.key === 'Backspace') {
+            this.config.store.qc.openShortcut = ''
+            this.config.save()
+            this.isCapturingOpenShortcut = false
+            return
+        }
+
+        const modifiers: string[] = []
+        if (event.ctrlKey || event.metaKey) modifiers.push('Ctrl')
+        if (event.altKey) modifiers.push('Alt')
+        if (event.shiftKey) modifiers.push('Shift')
+        modifiers.sort()
+
+        const mainKey = event.key
+        if (mainKey && !['Control', 'Alt', 'Shift', 'Meta'].includes(mainKey)) {
+            const processedKey = mainKey.length === 1
+                ? mainKey.toUpperCase()
+                : mainKey.charAt(0).toUpperCase() + mainKey.slice(1)
+
+            const shortcut = modifiers.length > 0
+                ? modifiers.join('+') + '+' + processedKey
+                : processedKey
+
+            this.config.store.qc.openShortcut = shortcut
+            this.config.save()
+            this.isCapturingOpenShortcut = false
+        }
+    }
+
+    startCaptureOpenShortcut(event: Event) {
+        event.preventDefault()
+        this.isCapturingOpenShortcut = true
+    }
 
     constructor (
         public config: ConfigService,

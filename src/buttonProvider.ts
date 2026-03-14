@@ -84,10 +84,19 @@ export class ButtonProvider extends ToolbarButtonProvider {
             
             shortcut += processedKey
             
+            // Check if this shortcut should open the command palette
+            const openShortcut = this.config.store.qc.openShortcut
+            if (openShortcut && shortcut === openShortcut) {
+                event.preventDefault()
+                event.stopPropagation()
+                this.activate()
+                return
+            }
+
             // Check if this shortcut matches any command
             const commands = this.config.store.qc.cmds
             const matchedCommand = commands.find(cmd => cmd.shortcut === shortcut)
-            
+
             // If a command is matched, prevent the default behavior to avoid sending extra escape sequences
             if (matchedCommand) {
                 event.preventDefault()
