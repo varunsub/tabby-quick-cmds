@@ -1,6 +1,6 @@
 {
   "name": "tabby-quick-command-manager",
-  "version": "1.2.0",
+  "version": "1.0.0",
   "description": "Quick commands manager for Tabby",
   "homepage": "https://github.com/varunsub/tabby-quick-cmds",
   "keywords": [
@@ -20,7 +20,7 @@
   "files": [
     "dist"
   ],
-  "author": "minyoad",
+  "author": "varunsub",
   "license": "MIT",
   "devDependencies": {
     "@types/webpack-env": "^1.16.3",
