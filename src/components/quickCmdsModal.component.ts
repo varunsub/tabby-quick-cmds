@@ -1,10 +1,10 @@
 import { Component } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { ConfigService, AppService, BaseTabComponent, SplitTabComponent } from 'terminus-core'
+import { ConfigService, AppService } from 'terminus-core'
 import { QuickCmds, ICmdGroup } from '../api'
 import { EditCommandModalComponent } from './editCommandModal.component'
-import { BaseTerminalTabComponent as TerminalTabComponent } from 'terminus-terminal';
+import { sendCommand, sendCommandToAllTabs } from '../sender'
 
 
 interface FlattenedItem {
@@ -62,9 +62,9 @@ export class QuickCmdsModalComponent {
             let command: QuickCmds = {
                 name: '',
                 text: this.quickCmd,
-                appendCR: true,
+                appendCR: this.appendCR,
             }
-            this._send(this.app.activeTab, command)
+            sendCommand(this.app.activeTab, command)
         }
         this.close()
     }
@@ -77,109 +77,15 @@ export class QuickCmdsModalComponent {
             let command: QuickCmds = {
                 name: '',
                 text: this.quickCmd,
-                appendCR: true,
+                appendCR: this.appendCR,
             }
             this._sendAll(command)
         }
         this.close()
     }
 
-    sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    async _send (tab: BaseTabComponent, quick_cmd: QuickCmds) {    
-        
-        if (tab instanceof SplitTabComponent) {
-            this._send((tab as SplitTabComponent).getFocusedTab(), quick_cmd)
-        }
-        if (tab instanceof TerminalTabComponent) {
-            let currentTab = tab as TerminalTabComponent
-
-            console.log("Current title:", currentTab.title);
-
-            let terminator = "\n";
-            let lineContinuation = "\\";
-            let cmdDelimiter = "&&";
-            
-            // 根据终端类型设置不同的命令分隔符和续行符
-            if (currentTab.title.includes('cmd.exe')) {
-                terminator = "\r\n";
-                lineContinuation = "^";
-                cmdDelimiter="&"
-            } else if (currentTab.title.includes('powershell')) {
-                terminator = "\r\n";
-                lineContinuation = "`";
-                cmdDelimiter=";"
-            }
-            
-            let cmd_text=quick_cmd.text
-
-            let cmds=cmd_text.split(/(?:\r\n|\r|\n)/)
-
-            let new_cmds=[];
-
-            for(let cmd of cmds) {
-                console.log("Sending " + cmd);
-
-                if(cmd===''){
-                    continue;
-                }
-
-                if(cmd.startsWith('\\s')){
-                    // 处理以 \s 开头的命令
-                    console.log('Processing sleep command');
-                    if(!quick_cmd.appendCR){
-                        continue;
-                    }
-                    cmd=cmd.replace('\\s','');
-                    let sleepTime=parseInt(cmd);
-                    await this.sleep(sleepTime);
-                    console.log('sleep time: ' + sleepTime);
-                    continue;
-                }
-
-                if(cmd.startsWith('\\x')){
-                    cmd = cmd.replace(/\\x([0-9a-f]{2})/ig, function(_, pair) {
-                            return String.fromCharCode(parseInt(pair, 16));
-                        });
-                }
-            
-                if(!quick_cmd.appendCR){
-                    new_cmds.push(cmd);
-                    continue;
-                }
-
-                await currentTab.sendInput(cmd);
-                await this.sleep(50); // 添加小延迟确保命令发送完成
-                await currentTab.sendInput(terminator);                
-            }
-
-            if (new_cmds.length > 0) {
-                let new_cmd_text;
-                if (currentTab.title.includes('powershell')) {
-                    // PowerShell特殊处理：使用分号连接命令，最后一个命令后不加续行符
-                    new_cmd_text = new_cmds.join(" ; ");
-                } else {
-                    new_cmd_text = new_cmds.join(" "+cmdDelimiter + lineContinuation + terminator);
-                }
-                console.log("New command text:", new_cmd_text);
-                await currentTab.sendInput(new_cmd_text);
-                // await currentTab.sendInput(terminator);
-            }
-        }
-    }
-
     _sendAll (cmd: QuickCmds) {
-        for (let tab of this.app.tabs) {
-            if (tab instanceof SplitTabComponent) {
-                for (let subtab of (tab as SplitTabComponent).getAllTabs()) {
-                    this._send(subtab, cmd)
-                }
-            } else {
-                this._send(tab, cmd)
-            }
-        }
+        sendCommandToAllTabs(this.app.tabs, cmd)
     }
 
     close () {
@@ -195,7 +101,7 @@ export class QuickCmdsModalComponent {
         if (event.ctrlKey) {
             this._sendAll(cmd)
         } else {
-            this._send(this.app.activeTab, cmd)
+            sendCommand(this.app.activeTab, cmd)
         }
         this.close()
     }
@@ -234,7 +140,7 @@ export class QuickCmdsModalComponent {
             }
             else {
                 for (let cmd of group.cmds) {
-                    this._send(this.app.activeTab, cmd)
+                    sendCommand(this.app.activeTab, cmd)
                 }
             }
         }

@@ -10,7 +10,7 @@
             (keyup.control.enter)='quickSendAll()',
         )
         toggle.ml-1(
-            title="Automatically append a '\\n' char to the end",
+            title="Press Enter after the text, so the command runs",
             [(ngModel)]='appendCR',
         )
 
@@ -36,5 +36,5 @@
                 )
                     .mr-auto
                         div {{cmd.name}}
-                        .text-muted {{cmd.text}}{{cmd.appendCR ? "\\n" : ""}}
+                        .text-muted {{cmd.text}}{{cmd.appendCR ? " ↵" : ""}}
                         
